@@ -1,0 +1,32 @@
+{
+  "name": "theeyesever",
+  "version": "0.0.0",
+  "description": "theeye manage server",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "server",
+    "theeye",
+    "node"
+  ],
+  "author": "fancy",
+  "license": "ISC",
+  "dependencies": {
+    "babel": "^6.23.0",
+    "body-parser": "^1.17.1",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.2",
+    "express-graphql": "^0.6.6",
+    "graphql": "^0.10.5",
+    "method-override": "^2.3.7",
+    "mockjs": "^1.0.1-beta3",
+    "mysql": "^2.14.0"
+  },
+  "devDependencies": {
+    "grunt": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-develop": "^0.4.0"
+  }
+}
