@@ -1,5 +1,6 @@
 const net = require('net');
 
+// Domian Soket: connect({ path: '/tmp/echo.sock' });
 var client = net.connect({ port: 8124 }, function () { // connect listener
   console.log('client connected');
   client.write('world!\r\n');
@@ -7,7 +8,7 @@ var client = net.connect({ port: 8124 }, function () { // connect listener
 
 client.on('data', function (data) {
   console.log(data.toString());
-  client.end();
+  // client.end();
 });
 
 client.on('end', function () {
