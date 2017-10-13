@@ -1,4 +1,6 @@
 const http = require('http');
+const fs = require('fs');
+const querystring = require('querystring');
 
 const hostname = '127.0.0.1';
 const port = 3000;
@@ -22,7 +24,80 @@ const port = 3000;
  * clientError: 连接的客户端触发 error，错误传到服务端。
  */
 
+/* 判断是否有 body */
+const hasBody = (req) => {
+  return 'transfer-encoding' in req.headers || 'content-length' in req.headers;
+};
+
+/* 获取 minetype 类型 */
+const mime = (req) => {
+  const str = req.headers['content-type'] || '';
+  return str.split(';')[0];
+};
+
+const handle = (req, res) => {
+  // if (req.headers['content-type'] === 'application/x-www-form-urlencoded') {
+    // req.body = querystring.parse(req.rawBody);
+    // console.log(querystring);
+  // }
+  // todo(req, res);
+};
+
 const server = http.createServer((req, res) => {
+  if (hasBody(req)) {
+    console.log('type********', req.headers);
+    if (mime(req) === 'application/x-www-form-urlencoded') {
+    //   const buffers = [];
+    //   req.on('data', (chunk) => {
+    //     buffers.push(chunk);
+    //   });
+    //   req.on('end', () => {
+    //     // key=value&key2=value2
+    //     req.rawBody = Buffer.concat(buffers).toString();
+    //     console.log('end', buffers, req.rawBody);
+    //     handle(req, res);
+    //   });
+    // } else if (mime(req) === 'application/json') {
+      const chunks = [];
+      let size = 0;
+      req.on('data', (chunk) => {
+        chunks.push(chunk);
+        size += chunk.length;
+      });
+
+      req.on('end', () => {
+        const buffer = Buffer.concat(chunks, size);
+        if (!size) {
+          res.writeHead(404);
+          res.end('');
+          return;
+        }
+        console.log(buffer);
+        const rems = [];
+
+        //根据\r\n分离数据和报头
+        for (let i = 0; i < buffer.length; i++) {
+          const v = buffer[i];
+          const v2 = buffer[i + 1];
+          if (v === 13 && v2 === 10) {
+            rems.push(i);
+          }
+        }
+
+        // 文件信息
+        const filemsg = buffer.slice(rems[0] + 2,rems[1]).toString();
+        const filename = filemsg.match(/filename=".*"/g)[0].split('"')[1];
+        console.log(filemsg, filename);
+        // 文件内容
+        const nbuf = buffer.slice(rems[3] + 2,rems[rems.length-2]);
+
+        const path = './databox/' + filename;
+        fs.writeFileSync(path, nbuf);
+      });
+    }
+  } else {
+    handle(req, res);
+  }
   res.statusCode = 200;
   res.setHeader('Content-Type', 'text/plain');
   res.end('hello world!');
